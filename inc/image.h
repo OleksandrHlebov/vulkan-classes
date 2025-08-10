@@ -96,6 +96,11 @@ namespace vkc
 			return m_MipLevels;
 		}
 
+		[[nodiscard]] VkFormat GetFormat() const
+		{
+			return m_Format;
+		}
+
 		static void ConvertFromSwapchainVkImages(Context& context, std::vector<Image>& convertedImages);
 
 		operator VkImage() const
