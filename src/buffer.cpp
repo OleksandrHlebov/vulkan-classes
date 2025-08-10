@@ -93,6 +93,7 @@ vkc::BufferBuilder& vkc::BufferBuilder::MapMemory(bool map)
 vkc::Buffer vkc::BufferBuilder::Build(VkBufferUsageFlags usage, VkDeviceSize size, bool addToQueue)
 {
 	Buffer buffer{};
+	buffer.m_Size = size;
 
 	m_BufferCreateInfo.usage = usage;
 	m_BufferCreateInfo.size  = size;
@@ -101,7 +102,6 @@ vkc::Buffer vkc::BufferBuilder::Build(VkBufferUsageFlags usage, VkDeviceSize siz
 	if (m_MapMemory)
 		vmaMapMemory(m_Context.Allocator, buffer.m_Allocation, &buffer.m_Data);
 
-	vmaGetAllocationInfo(m_Context.Allocator, buffer.m_Allocation, &buffer.m_AllocationInfo);
 
 	if (addToQueue)
 		m_Context.DeletionQueue.Push([context = &m_Context

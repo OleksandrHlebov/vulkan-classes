@@ -23,7 +23,7 @@ namespace vkc
 
 		[[nodiscard]] VkDeviceSize GetSize() const
 		{
-			return m_AllocationInfo.size;
+			return m_Size;
 		}
 
 		template<typename DataType>
@@ -63,7 +63,7 @@ namespace vkc
 		Buffer() = default;
 		VkBuffer          m_Buffer{ VK_NULL_HANDLE };
 		VmaAllocation     m_Allocation{ VK_NULL_HANDLE };
-		VmaAllocationInfo m_AllocationInfo{};
+		VkDeviceSize      m_Size{ 0 };
 		void*             m_Data{ nullptr };
 	};
 
