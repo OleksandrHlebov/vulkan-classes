@@ -24,7 +24,7 @@ void vkc::Buffer::CopyTo(Context const& context, CommandBuffer const& commandBuf
 {
 	VmaAllocationInfo allocationInfo{};
 	vmaGetAllocationInfo(context.Allocator, dst.GetAllocation(), &allocationInfo);
-	assert(allocationInfo.size == GetSize());
+	assert(allocationInfo.size >= GetSize());
 	VkBufferImageCopy2 copyRegion{};
 	copyRegion.sType             = VK_STRUCTURE_TYPE_BUFFER_IMAGE_COPY_2;
 	copyRegion.bufferOffset      = 0;
