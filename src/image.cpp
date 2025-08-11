@@ -70,35 +70,6 @@ void vkc::Image::MakeTransition(Context const& context, VkCommandBuffer commandB
 			m_Layouts[transition.BaseMipLevel + mipLevel][transition.BaseLayer + layer] = transition.NewLayout;
 }
 
-void vkc::Image::MakeTransition
-(
-	Context const&        context,
-	VkCommandBuffer       commandBuffer,
-	ImageView const&      view,
-	VkAccessFlags2        srcAccess, VkAccessFlags       dstAccess,
-	VkPipelineStageFlags2 srcStage, VkPipelineStageFlags dstStage,
-	VkImageLayout         newLayout,
-	uint32_t              srcQueue, uint32_t dstQueue
-)
-{
-	Transition transition{};
-	transition.SrcAccessMask = srcAccess;
-	transition.DstAccessMask = dstAccess;
-	transition.SrcStageMask  = srcStage;
-	transition.DstStageMask  = dstStage;
-	transition.NewLayout     = newLayout;
-
-	transition.BaseLayer    = view.GetBaseLayer();
-	transition.BaseMipLevel = view.GetBaseMipLevel();
-	transition.LayerCount   = view.GetLayerCount();
-	transition.LevelCount   = view.GetMipLevelCount();
-
-	transition.SrcQueue = srcQueue;
-	transition.DstQueue = dstQueue;
-
-	MakeTransition(context, commandBuffer, transition);
-}
-
 void vkc::Image::ConvertFromSwapchainVkImages(Context& context, std::vector<Image>& convertedImages)
 {
 	convertedImages.clear();
