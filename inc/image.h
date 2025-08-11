@@ -32,6 +32,14 @@ namespace vkc
 
 		struct Transition
 		{
+			Transition() {};
+
+			explicit Transition(ImageView const& imageView)
+				: BaseLayer{ imageView.GetBaseLayer() }
+				, LayerCount{ imageView.GetLayerCount() }
+				, BaseMipLevel{ imageView.GetBaseMipLevel() }
+				, LevelCount{ imageView.GetMipLevelCount() } {};
+
 			VkAccessFlags2        SrcAccessMask{};
 			VkAccessFlags2        DstAccessMask{};
 			VkPipelineStageFlags2 SrcStageMask{};
@@ -52,17 +60,6 @@ namespace vkc
 		void Destroy(Context const& context) const;
 
 		void MakeTransition(Context const& context, VkCommandBuffer commandBuffer, Transition const& transition);
-
-		void MakeTransition
-		(
-			Context const&        context,
-			VkCommandBuffer       commandBuffer,
-			ImageView const&      view,
-			VkAccessFlags2        srcAccess, VkAccessFlags       dstAccess,
-			VkPipelineStageFlags2 srcStage, VkPipelineStageFlags dstStage,
-			VkImageLayout         newLayout,
-			uint32_t              srcQueue = VK_QUEUE_FAMILY_IGNORED, uint32_t dstQueue = VK_QUEUE_FAMILY_IGNORED
-		);
 
 		[[nodiscard]] VkImageLayout GetLayout(uint32_t mipLevel = 0, uint32_t layer = 0) const
 		{
