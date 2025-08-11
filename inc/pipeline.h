@@ -72,6 +72,9 @@ namespace vkc
 
 		PipelineBuilder& AddDynamicState(VkDynamicState dynamicState);
 
+		PipelineBuilder& AddColorBlendAttachment(VkPipelineColorBlendAttachmentState&& attachment);
+		PipelineBuilder& AddColorBlendAttachment(VkPipelineColorBlendAttachmentState const& attachment);
+
 		PipelineBuilder& EnableDepthTest(VkCompareOp op, VkBool32 enable = VK_TRUE);
 
 		PipelineBuilder& EnableDepthWrite(VkBool32 enable = VK_TRUE);
@@ -83,18 +86,18 @@ namespace vkc
 
 		VkPipelineRenderingCreateInfo m_PipelineRendering{};
 
-		std::vector<VkRect2D>                        m_Scissors{};
-		std::vector<VkViewport>                      m_Viewports{};
-		std::vector<VkPipelineShaderStageCreateInfo> m_ShaderStages{};
-		std::vector<VkDynamicState>                  m_DynamicStates{};
-		VkPipelineVertexInputStateCreateInfo         m_VertexInputState{};
-		VkPipelineInputAssemblyStateCreateInfo       m_InputAssembly{};
-		VkPipelineViewportStateCreateInfo            m_ViewportState{};
-		VkPipelineRasterizationStateCreateInfo       m_Rasterizer{};
-		VkPipelineMultisampleStateCreateInfo         m_MultisampleState{};
-		VkPipelineColorBlendAttachmentState          m_ColorBlendAttachment{};
-		VkPipelineColorBlendStateCreateInfo          m_ColorBlendState{};
-		VkPipelineDepthStencilStateCreateInfo        m_DepthStencilState{};
+		std::vector<VkRect2D>                            m_Scissors{};
+		std::vector<VkViewport>                          m_Viewports{};
+		std::vector<VkPipelineShaderStageCreateInfo>     m_ShaderStages{};
+		std::vector<VkDynamicState>                      m_DynamicStates{};
+		std::vector<VkPipelineColorBlendAttachmentState> m_ColorBlendAttachments{};
+		VkPipelineVertexInputStateCreateInfo             m_VertexInputState{};
+		VkPipelineInputAssemblyStateCreateInfo           m_InputAssembly{};
+		VkPipelineViewportStateCreateInfo                m_ViewportState{};
+		VkPipelineRasterizationStateCreateInfo           m_Rasterizer{};
+		VkPipelineMultisampleStateCreateInfo             m_MultisampleState{};
+		VkPipelineColorBlendStateCreateInfo              m_ColorBlendState{};
+		VkPipelineDepthStencilStateCreateInfo            m_DepthStencilState{};
 	};
 }
 

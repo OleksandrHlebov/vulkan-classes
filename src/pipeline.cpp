@@ -26,15 +26,8 @@ vkc::PipelineBuilder::PipelineBuilder(Context& context)
 	m_MultisampleState.sampleShadingEnable  = VK_FALSE;
 	m_MultisampleState.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
 
-	m_ColorBlendAttachment.colorWriteMask =
-		VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-		VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-	m_ColorBlendAttachment.blendEnable = VK_FALSE;
-
-	m_ColorBlendState.sType           = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-	m_ColorBlendState.logicOpEnable   = VK_FALSE;
-	m_ColorBlendState.attachmentCount = 1;
-	m_ColorBlendState.pAttachments    = &m_ColorBlendAttachment;
+	m_ColorBlendState.sType         = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+	m_ColorBlendState.logicOpEnable = VK_FALSE;
 
 	m_DepthStencilState.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 }
@@ -125,6 +118,18 @@ vkc::PipelineBuilder& vkc::PipelineBuilder::AddDynamicState(VkDynamicState dynam
 	return *this;
 }
 
+vkc::PipelineBuilder& vkc::PipelineBuilder::AddColorBlendAttachment(VkPipelineColorBlendAttachmentState&& attachment)
+{
+	m_ColorBlendAttachments.emplace_back(attachment);
+	return *this;
+}
+
+vkc::PipelineBuilder& vkc::PipelineBuilder::AddColorBlendAttachment(VkPipelineColorBlendAttachmentState const& attachment)
+{
+	m_ColorBlendAttachments.emplace_back(attachment);
+	return *this;
+}
+
 vkc::PipelineBuilder& vkc::PipelineBuilder::EnableDepthTest(VkCompareOp op, VkBool32 enable)
 {
 	m_DepthStencilState.depthTestEnable = enable;
@@ -146,6 +151,9 @@ vkc::Pipeline vkc::PipelineBuilder::Build(PipelineLayout const& layout, bool add
 	m_ViewportState.pViewports    = m_Viewports.data();
 	m_ViewportState.scissorCount  = static_cast<uint32_t>(m_Scissors.size());
 	m_ViewportState.pScissors     = m_Scissors.data();
+
+	m_ColorBlendState.attachmentCount = static_cast<uint32_t>(m_ColorBlendAttachments.size());
+	m_ColorBlendState.pAttachments    = m_ColorBlendAttachments.data();
 
 	VkPipelineDynamicStateCreateInfo pipelineDynamicState{};
 	pipelineDynamicState.sType             = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
