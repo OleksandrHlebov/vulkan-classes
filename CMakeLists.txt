@@ -4,6 +4,15 @@ project(VulkanClasses)
 set(CMAKE_CXX_STANDARD 20)
 
 find_package(Vulkan REQUIRED)
+add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/W4>
+                    $<$<CXX_COMPILER_ID:MSVC>:/WX>
+                    $<$<CXX_COMPILER_ID:GNU>:-Wall>
+                    $<$<CXX_COMPILER_ID:GNU>:-Wextra>
+                    $<$<CXX_COMPILER_ID:GNU>:-Werror>
+                    $<$<CXX_COMPILER_ID:Clang>:-Wall>
+                    $<$<CXX_COMPILER_ID:Clang>:-Wextra>
+                    $<$<CXX_COMPILER_ID:Clang>:-Werror>)
+
 include(FetchContent)
 
 set(EXTERNAL_LIBS)

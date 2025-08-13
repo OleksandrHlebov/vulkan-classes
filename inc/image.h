@@ -32,7 +32,7 @@ namespace vkc
 
 		struct Transition
 		{
-			Transition() {};
+			Transition() = default;
 
 			explicit Transition(ImageView const& imageView)
 				: BaseLayer{ imageView.GetBaseLayer() }
@@ -61,11 +61,11 @@ namespace vkc
 
 		void MakeTransition(Context const& context, VkCommandBuffer commandBuffer, Transition const& transition);
 
-		[[nodiscard]] VkImageLayout GetLayout(uint32_t mipLevel = 0, uint32_t layer = 0) const
+		[[nodiscard]] VkImageLayout GetLayout(uint32_t layer = 0, uint32_t mipLevel = 0) const
 		{
 			assert(mipLevel < m_MipLevels && layer < m_Layers);
 
-			return m_Layouts[mipLevel][layer];
+			return m_Layouts[layer][mipLevel];
 		}
 
 		[[nodiscard]] VmaAllocation GetAllocation() const
@@ -118,10 +118,14 @@ namespace vkc
 	private:
 		friend class ImageBuilder;
 		Image() = default;
-		using Layers    = std::vector<VkImageLayout>;
-		using MipLevels = std::vector<Layers>;
+
+		[[nodiscard]] std::vector<VkImageMemoryBarrier2> MakeBarriersForEqualLayouts(Transition const& transition) const;
+		[[nodiscard]] std::vector<VkImageMemoryBarrier2> MakeBarriersForDifferentLayouts(Transition const& transition) const;
+
+		using MipLevels = std::vector<VkImageLayout>;
+		using Layers    = std::vector<MipLevels>;
 		VkImage            m_Image{};
-		MipLevels          m_Layouts{};
+		Layers             m_Layouts{};
 		VmaAllocation      m_Allocation{};
 		VkExtent2D         m_Extent{};
 		VkFormat           m_Format{};
@@ -133,7 +137,7 @@ namespace vkc
 	class ImageBuilder final
 	{
 	public:
-		ImageBuilder(Context& context)
+		explicit ImageBuilder(Context& context)
 			: m_Context{ context } {}
 
 		~ImageBuilder() = default;

@@ -40,34 +40,35 @@ void vkc::Image::Destroy(Context const& context) const
 
 void vkc::Image::MakeTransition(Context const& context, VkCommandBuffer commandBuffer, Transition const& transition)
 {
-	VkImageMemoryBarrier2 memoryBarrier{};
-	memoryBarrier.sType               = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2;
-	memoryBarrier.image               = *this;
-	memoryBarrier.srcQueueFamilyIndex = transition.SrcQueue;
-	memoryBarrier.dstQueueFamilyIndex = transition.DstQueue;
-	memoryBarrier.srcAccessMask       = transition.SrcAccessMask;
-	memoryBarrier.dstAccessMask       = transition.DstAccessMask;
-	memoryBarrier.srcStageMask        = transition.SrcStageMask;
-	memoryBarrier.dstStageMask        = transition.DstStageMask;
-	memoryBarrier.oldLayout           = m_Layouts[transition.BaseMipLevel][transition.BaseLayer];
-	memoryBarrier.newLayout           = transition.NewLayout;
+	bool hasEqualLayouts{ true };
 
-	memoryBarrier.subresourceRange.aspectMask     = m_AspectFlags;
-	memoryBarrier.subresourceRange.layerCount     = transition.LayerCount;
-	memoryBarrier.subresourceRange.baseArrayLayer = transition.BaseLayer;
-	memoryBarrier.subresourceRange.levelCount     = transition.LevelCount;
-	memoryBarrier.subresourceRange.baseMipLevel   = transition.BaseMipLevel;
+	VkImageLayout const baseLayout = GetLayout(transition.BaseLayer, transition.BaseMipLevel);
+
+	for (uint32_t layer{ transition.BaseLayer }; layer < transition.BaseLayer + transition.LayerCount && hasEqualLayouts; ++layer)
+		for (uint32_t mipLevel{ transition.BaseMipLevel }; mipLevel < transition.BaseMipLevel + transition.LevelCount; ++mipLevel)
+			if (baseLayout != GetLayout(layer, mipLevel))
+			{
+				hasEqualLayouts = false;
+				break;
+			}
+
+	std::vector const barriers
+	{
+		hasEqualLayouts
+		? MakeBarriersForEqualLayouts(transition)
+		: MakeBarriersForDifferentLayouts(transition)
+	};
 
 	VkDependencyInfo dependencyInfo{};
 	dependencyInfo.sType                   = VK_STRUCTURE_TYPE_DEPENDENCY_INFO;
 	dependencyInfo.pNext                   = nullptr;
-	dependencyInfo.imageMemoryBarrierCount = 1;
-	dependencyInfo.pImageMemoryBarriers    = &memoryBarrier;
+	dependencyInfo.imageMemoryBarrierCount = static_cast<uint32_t>(barriers.size());
+	dependencyInfo.pImageMemoryBarriers    = barriers.data();
 	context.DispatchTable.cmdPipelineBarrier2(commandBuffer, &dependencyInfo);
 
-	for (uint32_t mipLevel{}; mipLevel < transition.LevelCount; ++mipLevel)
-		for (uint32_t layer{}; layer < transition.LayerCount; ++layer)
-			m_Layouts[transition.BaseMipLevel + mipLevel][transition.BaseLayer + layer] = transition.NewLayout;
+	for (uint32_t layer{}; layer < transition.LayerCount; ++layer)
+		for (uint32_t mipLevel{}; mipLevel < transition.LevelCount; ++mipLevel)
+			m_Layouts[transition.BaseLayer + layer][transition.BaseMipLevel + mipLevel] = transition.NewLayout;
 }
 
 void vkc::Image::ConvertFromSwapchainVkImages(Context& context, std::vector<Image>& convertedImages)
@@ -90,6 +91,62 @@ void vkc::Image::ConvertFromSwapchainVkImages(Context& context, std::vector<Imag
 		convertedImage.m_Layouts[0].resize(1);
 		convertedImages.emplace_back(std::move(convertedImage));
 	}
+}
+
+std::vector<VkImageMemoryBarrier2> vkc::Image::MakeBarriersForEqualLayouts(Transition const& transition) const
+{
+	VkImageMemoryBarrier2 memoryBarrier{};
+	memoryBarrier.sType         = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2;
+	memoryBarrier.image         = m_Image;
+	memoryBarrier.srcAccessMask = transition.SrcAccessMask;
+	memoryBarrier.dstAccessMask = transition.DstAccessMask;
+	memoryBarrier.srcStageMask  = transition.SrcStageMask;
+	memoryBarrier.dstStageMask  = transition.DstStageMask;
+	memoryBarrier.oldLayout     = GetLayout(transition.BaseLayer, transition.BaseMipLevel);
+	memoryBarrier.newLayout     = transition.NewLayout;
+
+	memoryBarrier.subresourceRange.aspectMask     = m_AspectFlags;
+	memoryBarrier.subresourceRange.layerCount     = transition.LayerCount;
+	memoryBarrier.subresourceRange.baseArrayLayer = transition.BaseLayer;
+	memoryBarrier.subresourceRange.levelCount     = transition.LevelCount;
+	memoryBarrier.subresourceRange.baseMipLevel   = transition.BaseMipLevel;
+
+	memoryBarrier.srcQueueFamilyIndex = transition.SrcQueue;
+	memoryBarrier.dstQueueFamilyIndex = transition.DstQueue;
+
+	return { memoryBarrier };
+}
+
+std::vector<VkImageMemoryBarrier2> vkc::Image::MakeBarriersForDifferentLayouts(Transition const& transition) const
+{
+	// could make it find sequential equal layouts to reduce the number of barriers used for performance
+
+	std::vector<VkImageMemoryBarrier2> barriers{};
+	for (uint32_t layer{ transition.BaseLayer }; layer < transition.LayerCount; ++layer)
+		for (uint32_t mipLevel{ transition.BaseMipLevel }; mipLevel < transition.LevelCount; ++mipLevel)
+			barriers.emplace_back(VkImageMemoryBarrier2{
+									  .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2
+									  , .pNext = nullptr
+									  , .srcStageMask = transition.SrcStageMask
+									  , .srcAccessMask = transition.SrcAccessMask
+									  , .dstStageMask = transition.DstStageMask
+									  , .dstAccessMask = transition.DstAccessMask
+									  , .oldLayout = GetLayout(layer, mipLevel)
+									  , .newLayout = transition.NewLayout
+									  , .srcQueueFamilyIndex = transition.SrcQueue
+									  , .dstQueueFamilyIndex = transition.DstQueue
+									  , .image = m_Image
+									  , .subresourceRange
+									  {
+										  m_AspectFlags
+										  , mipLevel
+										  , 1
+										  , layer
+										  , 1
+									  }
+								  });
+
+	return barriers;
 }
 
 vkc::ImageBuilder& vkc::ImageBuilder::SetFormat(VkFormat format)
@@ -180,9 +237,9 @@ vkc::Image vkc::ImageBuilder::Build(VkImageUsageFlags usage, bool addToQueue) co
 	image.m_Format      = m_Format;
 	image.m_Layers      = m_Layers;
 	image.m_MipLevels   = m_MipLevels;
-	image.m_Layouts.resize(m_MipLevels);
+	image.m_Layouts.resize(m_Layers);
 	for (auto& layers: image.m_Layouts)
-		layers.resize(m_Layers, VK_IMAGE_LAYOUT_UNDEFINED);
+		layers.resize(m_MipLevels, VK_IMAGE_LAYOUT_UNDEFINED);
 
 	vmaCreateImage(m_Context.Allocator, &createInfo, &vmaAllocationCreateInfo, image, &image.m_Allocation, nullptr);
 
