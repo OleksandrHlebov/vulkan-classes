@@ -62,7 +62,7 @@ namespace vkc
 
 		PipelineBuilder& AddViewport(VkExtent2D const& extent);
 
-		PipelineBuilder& SetDepthBias(float constantFactor, float slopeFactor, float clamp = .0f, bool clampEnable = true);
+		PipelineBuilder& SetDepthBias(float constantFactor, float slopeFactor, float clamp = .0f, bool clampEnable = false);
 
 		PipelineBuilder& SetCullMode(VkCullModeFlagBits cullMode);
 

@@ -87,6 +87,7 @@ vkc::PipelineBuilder& vkc::PipelineBuilder::AddViewport(VkExtent2D const& extent
 
 vkc::PipelineBuilder& vkc::PipelineBuilder::SetDepthBias(float constantFactor, float slopeFactor, float clamp, bool clampEnable)
 {
+	m_Rasterizer.depthBiasEnable         = VK_TRUE;
 	m_Rasterizer.depthClampEnable        = clampEnable;
 	m_Rasterizer.depthBiasConstantFactor = constantFactor;
 	m_Rasterizer.depthBiasSlopeFactor    = slopeFactor;
