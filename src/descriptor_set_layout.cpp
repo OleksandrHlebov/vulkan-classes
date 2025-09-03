@@ -9,8 +9,10 @@ vkc::DescriptorSetLayoutBuilder::DescriptorSetLayoutBuilder(Context& context)
 	: m_Context{ context } {}
 
 vkc::DescriptorSetLayoutBuilder& vkc::DescriptorSetLayoutBuilder::AddBinding
-(uint32_t binding, VkDescriptorType descriptorType, VkShaderStageFlags stageFlags, uint32_t count)
+(uint32_t binding, VkDescriptorType descriptorType, VkShaderStageFlags stageFlags, uint32_t count, VkDescriptorBindingFlags flags)
 {
+	m_BindingFlags.emplace_back(flags);
+
 	VkDescriptorSetLayoutBinding bindingInfo{};
 	bindingInfo.binding         = binding;
 	bindingInfo.descriptorType  = descriptorType;
@@ -22,9 +24,16 @@ vkc::DescriptorSetLayoutBuilder& vkc::DescriptorSetLayoutBuilder::AddBinding
 
 vkc::DescriptorSetLayout vkc::DescriptorSetLayoutBuilder::Build(bool addToQueue)
 {
-	DescriptorSetLayout        layout{};
+	DescriptorSetLayout layout{};
+
+	VkDescriptorSetLayoutBindingFlagsCreateInfo bindingFlagsCreateInfo{};
+	bindingFlagsCreateInfo.sType         = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO;
+	bindingFlagsCreateInfo.bindingCount  = static_cast<uint32_t>(m_BindingFlags.size());
+	bindingFlagsCreateInfo.pBindingFlags = m_BindingFlags.data();
+
 	VkDescriptorSetLayoutCreateInfo layoutInfo{};
 	layoutInfo.sType        = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+	layoutInfo.pNext        = &bindingFlagsCreateInfo;
 	layoutInfo.bindingCount = static_cast<uint32_t>(m_Bindings.size());
 	layoutInfo.pBindings    = m_Bindings.data();
 	if (m_Context.DispatchTable.createDescriptorSetLayout(&layoutInfo, nullptr, layout) != VK_SUCCESS)

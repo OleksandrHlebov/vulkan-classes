@@ -49,13 +49,18 @@ namespace vkc
 		DescriptorSetLayoutBuilder& operator=(DescriptorSetLayoutBuilder const&) = delete;
 
 		DescriptorSetLayoutBuilder& AddBinding
-		(uint32_t binding, VkDescriptorType descriptorType, VkShaderStageFlags stageFlags, uint32_t count = 1);
+		(
+			uint32_t                   binding, VkDescriptorType descriptorType, VkShaderStageFlags stageFlags
+			, uint32_t                 count = 1
+			, VkDescriptorBindingFlags flags = 0
+		);
 
 		[[nodiscard]] DescriptorSetLayout Build(bool addToQueue = true);
 
 	private:
 		Context& m_Context;
 
+		std::vector<VkDescriptorBindingFlags>     m_BindingFlags;
 		std::vector<VkDescriptorSetLayoutBinding> m_Bindings{};
 	};
 }
