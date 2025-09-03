@@ -34,6 +34,7 @@ vkc::DescriptorSetLayout vkc::DescriptorSetLayoutBuilder::Build(bool addToQueue)
 	VkDescriptorSetLayoutCreateInfo layoutInfo{};
 	layoutInfo.sType        = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 	layoutInfo.pNext        = &bindingFlagsCreateInfo;
+	layoutInfo.flags        = m_CreateFlags;
 	layoutInfo.bindingCount = static_cast<uint32_t>(m_Bindings.size());
 	layoutInfo.pBindings    = m_Bindings.data();
 	if (m_Context.DispatchTable.createDescriptorSetLayout(&layoutInfo, nullptr, layout) != VK_SUCCESS)
