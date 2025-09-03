@@ -55,11 +55,18 @@ namespace vkc
 			, VkDescriptorBindingFlags flags = 0
 		);
 
+		DescriptorSetLayoutBuilder& SetCreateFlags(VkDescriptorSetLayoutCreateFlags flags)
+		{
+			m_CreateFlags = flags;
+			return *this;
+		}
+
 		[[nodiscard]] DescriptorSetLayout Build(bool addToQueue = true);
 
 	private:
 		Context& m_Context;
 
+		VkDescriptorSetLayoutCreateFlags          m_CreateFlags{};
 		std::vector<VkDescriptorBindingFlags>     m_BindingFlags;
 		std::vector<VkDescriptorSetLayoutBinding> m_Bindings{};
 	};
