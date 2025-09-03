@@ -60,10 +60,17 @@ namespace vkc
 		DescriptorSetBuilder& operator=(DescriptorSetBuilder&&)      = delete;
 		DescriptorSetBuilder& operator=(DescriptorSetBuilder const&) = delete;
 
+		DescriptorSetBuilder&                    AddVariableDescriptorCount(std::span<uint32_t> counts);
 		[[nodiscard]] std::vector<DescriptorSet> Build(VkDescriptorPool pool, std::span<VkDescriptorSetLayout> layouts) const;
 
 	private:
-		Context& m_Context;
+		Context&                                           m_Context;
+		VkDescriptorSetVariableDescriptorCountAllocateInfo m_DescriptorCountAllocInfo{
+			VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO
+			, nullptr
+			, 0
+			, nullptr
+		};
 	};
 }
 

@@ -46,6 +46,13 @@ void vkc::DescriptorSet::Update(Context const& context)
 vkc::DescriptorSetBuilder::DescriptorSetBuilder(Context& context)
 	: m_Context{ context } {}
 
+vkc::DescriptorSetBuilder& vkc::DescriptorSetBuilder::AddVariableDescriptorCount(std::span<uint32_t> counts)
+{
+	m_DescriptorCountAllocInfo.descriptorSetCount = static_cast<uint32_t>(counts.size());
+	m_DescriptorCountAllocInfo.pDescriptorCounts  = counts.data();
+	return *this;
+}
+
 std::vector<vkc::DescriptorSet> vkc::DescriptorSetBuilder::Build
 (VkDescriptorPool pool, std::span<VkDescriptorSetLayout> layouts) const
 {
@@ -53,6 +60,7 @@ std::vector<vkc::DescriptorSet> vkc::DescriptorSetBuilder::Build
 
 	VkDescriptorSetAllocateInfo allocInfo{};
 	allocInfo.sType              = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+	allocInfo.pNext              = m_DescriptorCountAllocInfo.descriptorSetCount > 0 ? &m_DescriptorCountAllocInfo : nullptr;
 	allocInfo.descriptorPool     = pool;
 	allocInfo.descriptorSetCount = static_cast<uint32_t>(layouts.size());
 	allocInfo.pSetLayouts        = layouts.data();
