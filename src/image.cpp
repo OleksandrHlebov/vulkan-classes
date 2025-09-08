@@ -214,6 +214,7 @@ vkc::Image vkc::ImageBuilder::Build(VkImageUsageFlags usage, bool addToQueue) co
 	VkImageCreateInfo createInfo{};
 	createInfo.sType         = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 	createInfo.pNext         = nullptr;
+	createInfo.flags         = m_CreationFlags;
 	createInfo.imageType     = m_ImageType;
 	createInfo.format        = m_Format;
 	createInfo.tiling        = m_Tiling;
