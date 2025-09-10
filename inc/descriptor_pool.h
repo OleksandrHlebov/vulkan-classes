@@ -48,11 +48,18 @@ namespace vkc
 
 		DescriptorPoolBuilder& AddPoolSize(VkDescriptorType type, uint32_t count);
 
+		DescriptorPoolBuilder& SetFlags(VkDescriptorPoolCreateFlags flags)
+		{
+			m_Flags = flags;
+			return *this;
+		}
+
 		[[nodiscard]] DescriptorPool Build(uint32_t maxSets, bool addToQueue = true);
 
 	private:
 		Context& m_Context;
 
+		VkDescriptorPoolCreateFlags       m_Flags = {};
 		std::vector<VkDescriptorPoolSize> m_DescriptorPoolSizes{};
 	};
 }

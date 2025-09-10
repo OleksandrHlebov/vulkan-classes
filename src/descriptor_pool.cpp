@@ -12,6 +12,7 @@ vkc::DescriptorPool vkc::DescriptorPoolBuilder::Build(uint32_t maxSets, bool add
 
 	VkDescriptorPoolCreateInfo poolCreateInfo{};
 	poolCreateInfo.sType         = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+	poolCreateInfo.flags         = m_Flags;
 	poolCreateInfo.maxSets       = maxSets;
 	poolCreateInfo.poolSizeCount = static_cast<uint32_t>(m_DescriptorPoolSizes.size());
 	poolCreateInfo.pPoolSizes    = m_DescriptorPoolSizes.data();
