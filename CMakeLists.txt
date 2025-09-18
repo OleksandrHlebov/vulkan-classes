@@ -49,7 +49,9 @@ set(INCLUDE
     inc/descriptor_pool.h
     inc/shader_stage.h
     inc/command_pool.h
-    inc/command_buffer.h)
+    inc/command_buffer.h
+    inc/pipeline_cache.h
+    inc/descriptor_set.h)
 
 set(SOURCE
     src/main.cpp
@@ -61,12 +63,9 @@ set(SOURCE
     src/pipeline.cpp
     src/descriptor_set_layout.cpp
     src/descriptor_pool.cpp
-    inc/descriptor_set.h
     src/descriptor_set.cpp
     src/command_pool.cpp
-    src/command_buffer.cpp
-    inc/pipeline_cache.h
-    src/pipeline_cache.cpp)
+    src/command_buffer.cpp)
 
 add_library(VulkanClasses STATIC
             ${SOURCE}
