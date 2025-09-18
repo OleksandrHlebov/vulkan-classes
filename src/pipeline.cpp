@@ -184,7 +184,7 @@ vkc::Pipeline vkc::PipelineBuilder::Build(PipelineLayout const& layout, bool add
 	pipelineCreateInfo.renderPass          = VK_NULL_HANDLE;
 	pipelineCreateInfo.layout              = layout;
 
-	if (m_Context.DispatchTable.createGraphicsPipelines(*m_PipelineCache
+	if (m_Context.DispatchTable.createGraphicsPipelines(m_PipelineCache ? *m_PipelineCache : static_cast<VkPipelineCache>(VK_NULL_HANDLE)
 														, 1
 														, &pipelineCreateInfo
 														, nullptr
