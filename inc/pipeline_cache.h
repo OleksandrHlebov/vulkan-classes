@@ -26,6 +26,11 @@ namespace vkc
 		PipelineCache& operator=(PipelineCache&&)      = delete;
 		PipelineCache& operator=(PipelineCache const&) = delete;
 
+		void Destroy(Context const& context) const
+		{
+			context.DispatchTable.destroyPipelineCache(m_PipelineCache, nullptr);
+		}
+
 		[[nodiscard]] Data AcquireCache(Context const& context) const
 		{
 			size_t cacheSize{};
