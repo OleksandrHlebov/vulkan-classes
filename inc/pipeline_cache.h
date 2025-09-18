@@ -18,7 +18,18 @@ namespace vkc
 		};
 
 		PipelineCache() = delete;
-		PipelineCache(Context const& context, std::span<char> initialData, VkPipelineCacheCreateFlagBits flags);
+
+		template<typename DataType>
+		PipelineCache(Context const& context, std::span<DataType> initialData, VkPipelineCacheCreateFlagBits flags)
+		{
+			VkPipelineCacheCreateInfo pipelineCacheCreateInfo{};
+			pipelineCacheCreateInfo.sType           = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
+			pipelineCacheCreateInfo.flags           = flags;
+			pipelineCacheCreateInfo.initialDataSize = initialData.size() * sizeof(initialData[0]);
+			pipelineCacheCreateInfo.pInitialData    = initialData.data();
+			context.DispatchTable.createPipelineCache(&pipelineCacheCreateInfo, nullptr, &m_PipelineCache);
+		}
+
 		~PipelineCache() = default;
 
 		PipelineCache(PipelineCache&&)                 = delete;
