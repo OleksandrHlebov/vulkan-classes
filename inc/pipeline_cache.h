@@ -11,10 +11,19 @@ namespace vkc
 		{
 			explicit Data(std::vector<char>&& cache)
 				: Cache{ std::move(cache) }
-				, Header{ reinterpret_cast<VkPipelineCacheHeaderVersionOne const&>(*Cache.data()) } {}
+				, Header{
+					[this]
+					{
+						if (Cache.size() < sizeof(Header))
+							throw std::runtime_error("Pipeline cache too small for header");
+						VkPipelineCacheHeaderVersionOne result{};
+						std::memcpy(&result, Cache.data(), sizeof(Header));
+						return result;
+					}()
+				} {}
 
-			std::vector<char> const                Cache;
-			VkPipelineCacheHeaderVersionOne const& Header;
+			std::vector<char> const               Cache;
+			VkPipelineCacheHeaderVersionOne const Header;
 		};
 
 		PipelineCache() = delete;
