@@ -9,16 +9,16 @@ namespace vkc
 	public:
 		struct Data final
 		{
-			explicit Data(std::vector<unsigned char>&& cache)
+			explicit Data(std::vector<char>&& cache)
 				: Cache{ std::move(cache) }
 				, Header{ reinterpret_cast<VkPipelineCacheHeaderVersionOne const&>(*Cache.data()) } {}
 
-			std::vector<unsigned char> const       Cache;
+			std::vector<char> const                Cache;
 			VkPipelineCacheHeaderVersionOne const& Header;
 		};
 
 		PipelineCache() = delete;
-		PipelineCache(Context const& context, std::span<unsigned char> initialData, VkPipelineCacheCreateFlagBits flags);
+		PipelineCache(Context const& context, std::span<char> initialData, VkPipelineCacheCreateFlagBits flags);
 		~PipelineCache() = default;
 
 		PipelineCache(PipelineCache&&)                 = delete;
@@ -30,7 +30,7 @@ namespace vkc
 		{
 			size_t cacheSize{};
 			context.DispatchTable.getPipelineCacheData(m_PipelineCache, &cacheSize, nullptr);
-			std::vector<unsigned char> cache;
+			std::vector<char> cache;
 			cache.resize(cacheSize);
 			context.DispatchTable.getPipelineCacheData(m_PipelineCache, &cacheSize, cache.data());
 			return Data{ std::move(cache) };

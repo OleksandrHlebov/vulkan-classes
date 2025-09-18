@@ -1,6 +1,6 @@
 #include "pipeline_cache.h"
 
-vkc::PipelineCache::PipelineCache(Context const& context, std::span<unsigned char> initialData, VkPipelineCacheCreateFlagBits flags)
+vkc::PipelineCache::PipelineCache(Context const& context, std::span<char> initialData, VkPipelineCacheCreateFlagBits flags)
 {
 	VkPipelineCacheCreateInfo pipelineCacheCreateInfo{};
 	pipelineCacheCreateInfo.sType           = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
