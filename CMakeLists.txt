@@ -64,7 +64,9 @@ set(SOURCE
     inc/descriptor_set.h
     src/descriptor_set.cpp
     src/command_pool.cpp
-    src/command_buffer.cpp)
+    src/command_buffer.cpp
+    inc/pipeline_cache.h
+    src/pipeline_cache.cpp)
 
 add_library(VulkanClasses STATIC
             ${SOURCE}

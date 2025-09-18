@@ -1,4 +1,5 @@
 #include "pipeline.h"
+#include "pipeline_cache.h"
 
 #include "shader_stage.h"
 
@@ -113,6 +114,12 @@ vkc::PipelineBuilder& vkc::PipelineBuilder::SetPolygonMode(VkPolygonMode polygon
 	return *this;
 }
 
+vkc::PipelineBuilder& vkc::PipelineBuilder::UseCache(PipelineCache& cache)
+{
+	m_PipelineCache = &cache;
+	return *this;
+}
+
 vkc::PipelineBuilder& vkc::PipelineBuilder::AddDynamicState(VkDynamicState dynamicState)
 {
 	m_DynamicStates.emplace_back(dynamicState);
@@ -177,7 +184,7 @@ vkc::Pipeline vkc::PipelineBuilder::Build(PipelineLayout const& layout, bool add
 	pipelineCreateInfo.renderPass          = VK_NULL_HANDLE;
 	pipelineCreateInfo.layout              = layout;
 
-	if (m_Context.DispatchTable.createGraphicsPipelines(VK_NULL_HANDLE
+	if (m_Context.DispatchTable.createGraphicsPipelines(*m_PipelineCache
 														, 1
 														, &pipelineCreateInfo
 														, nullptr

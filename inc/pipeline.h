@@ -8,6 +8,8 @@
 
 namespace vkc
 {
+	class PipelineCache;
+
 	class Pipeline final
 	{
 	public:
@@ -70,6 +72,8 @@ namespace vkc
 
 		PipelineBuilder& SetPolygonMode(VkPolygonMode polygonMode);
 
+		PipelineBuilder& UseCache(PipelineCache& cache);
+
 		PipelineBuilder& AddDynamicState(VkDynamicState dynamicState);
 
 		PipelineBuilder& AddColorBlendAttachment(VkPipelineColorBlendAttachmentState&& attachment);
@@ -98,6 +102,7 @@ namespace vkc
 		VkPipelineMultisampleStateCreateInfo             m_MultisampleState{};
 		VkPipelineColorBlendStateCreateInfo              m_ColorBlendState{};
 		VkPipelineDepthStencilStateCreateInfo            m_DepthStencilState{};
+		PipelineCache*                                   m_PipelineCache{};
 	};
 }
 
