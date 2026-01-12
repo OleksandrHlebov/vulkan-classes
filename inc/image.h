@@ -157,22 +157,24 @@ namespace vkc
 		ImageBuilder& SetMemoryUsage(VmaMemoryUsage memoryUsage);
 		ImageBuilder& SetFlags(VkImageCreateFlags flags);
 		ImageBuilder& SetSharingMode(VkSharingMode sharingMode);
+		ImageBuilder& SetMemoryFlags(VmaAllocationCreateFlags createFlags);
 
 		[[nodiscard]] Image Build(VkImageUsageFlags usage, bool addToQueue = true) const;
 
 	private:
-		Context&           m_Context;
-		VkFormat           m_Format{ VK_FORMAT_R8G8B8A8_SRGB };
-		VkExtent2D         m_Extent{};
-		VkImageTiling      m_Tiling{ VK_IMAGE_TILING_OPTIMAL };
-		VkImageUsageFlags  m_Usage{};
-		VkImageType        m_ImageType{};
-		VkImageCreateFlags m_CreationFlags{};
-		VkImageAspectFlags m_AspectFlags{ VK_IMAGE_ASPECT_COLOR_BIT };
-		VkSharingMode      m_SharingMode{ VK_SHARING_MODE_EXCLUSIVE };
-		VmaMemoryUsage     m_MemoryUsage{ VMA_MEMORY_USAGE_AUTO };
-		uint32_t           m_Layers{ 1 };
-		uint32_t           m_MipLevels{ 1 };
+		Context&                 m_Context;
+		VkFormat                 m_Format{ VK_FORMAT_R8G8B8A8_SRGB };
+		VkExtent2D               m_Extent{};
+		VkImageTiling            m_Tiling{ VK_IMAGE_TILING_OPTIMAL };
+		VkImageUsageFlags        m_Usage{};
+		VkImageType              m_ImageType{};
+		VkImageCreateFlags       m_CreationFlags{};
+		VkImageAspectFlags       m_AspectFlags{ VK_IMAGE_ASPECT_COLOR_BIT };
+		VmaAllocationCreateFlags m_MemoryFlags{};
+		VkSharingMode            m_SharingMode{ VK_SHARING_MODE_EXCLUSIVE };
+		VmaMemoryUsage           m_MemoryUsage{ VMA_MEMORY_USAGE_AUTO };
+		uint32_t                 m_Layers{ 1 };
+		uint32_t                 m_MipLevels{ 1 };
 
 		CommandPool* m_CommandPool{};
 

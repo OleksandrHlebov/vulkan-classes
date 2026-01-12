@@ -2,7 +2,13 @@
 
 vkc::ImageView vkc::Image::CreateView
 (
-	Context& context, VkImageViewType type, uint32_t baseLayer, uint32_t layerCount, uint32_t baseMipLevel, uint32_t levelCount, bool
+	Context&          context
+	, VkImageViewType type
+	, uint32_t        baseLayer
+	, uint32_t        layerCount
+	, uint32_t        baseMipLevel
+	, uint32_t        levelCount
+	, bool
 	addToQueue
 ) const
 {
@@ -209,6 +215,12 @@ vkc::ImageBuilder& vkc::ImageBuilder::SetSharingMode(VkSharingMode sharingMode)
 	return *this;
 }
 
+vkc::ImageBuilder& vkc::ImageBuilder::SetMemoryFlags(VmaAllocationCreateFlags createFlags)
+{
+	m_MemoryFlags = createFlags;
+	return *this;
+}
+
 vkc::Image vkc::ImageBuilder::Build(VkImageUsageFlags usage, bool addToQueue) const
 {
 	VkImageCreateInfo createInfo{};
@@ -229,7 +241,7 @@ vkc::Image vkc::ImageBuilder::Build(VkImageUsageFlags usage, bool addToQueue) co
 	createInfo.samples       = VK_SAMPLE_COUNT_1_BIT;
 
 	VmaAllocationCreateInfo vmaAllocationCreateInfo{};
-	vmaAllocationCreateInfo.flags = 0;
+	vmaAllocationCreateInfo.flags = m_MemoryFlags;
 	vmaAllocationCreateInfo.usage = m_MemoryUsage;
 
 	Image image{};

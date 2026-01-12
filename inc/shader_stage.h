@@ -42,9 +42,7 @@ namespace vkc
 		ShaderStage& operator=(ShaderStage&&)      = delete;
 		ShaderStage& operator=(ShaderStage const&) = delete;
 
-		template
-		<typename DataType>
-
+		template<typename DataType>
 		void AddSpecializationConstant(DataType data)
 		{
 			auto const offset = static_cast<uint32_t>(m_SpecializationData.size());
