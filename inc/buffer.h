@@ -46,6 +46,11 @@ namespace vkc
 
 		void Destroy(Context const& context) const;
 
+		void *GetMappedData() const
+		{
+			return m_Data;
+		}
+
 		operator VkBuffer() const;
 
 		operator VkBuffer*()
@@ -61,10 +66,10 @@ namespace vkc
 	private:
 		friend class BufferBuilder;
 		Buffer() = default;
-		VkBuffer          m_Buffer{ VK_NULL_HANDLE };
-		VmaAllocation     m_Allocation{ VK_NULL_HANDLE };
-		VkDeviceSize      m_Size{ 0 };
-		void*             m_Data{ nullptr };
+		VkBuffer      m_Buffer{ VK_NULL_HANDLE };
+		VmaAllocation m_Allocation{ VK_NULL_HANDLE };
+		VkDeviceSize  m_Size{ 0 };
+		void*         m_Data{ nullptr };
 	};
 
 	class BufferBuilder final
