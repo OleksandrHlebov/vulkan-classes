@@ -33,11 +33,15 @@ void vkc::CommandBuffer::End(Context const& context)
 	m_Status = Status::Executable;
 }
 
-void vkc::CommandBuffer::Reset(Context const& context, bool reuse)
+void vkc::CommandBuffer::Reset(Context const& context) const
 {
 	context.DispatchTable.resetCommandBuffer(m_CommandBuffer, 0);
-	if (reuse)
-		m_Status = Status::Executable;
+}
+
+void vkc::CommandBuffer::Reuse()
+{
+	assert(m_Status == Status::Submitted);
+	m_Status = Status::Executable;
 }
 
 void vkc::CommandBuffer::Submit
