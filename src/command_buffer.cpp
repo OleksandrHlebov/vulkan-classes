@@ -40,7 +40,7 @@ void vkc::CommandBuffer::Reset(Context const& context) const
 
 void vkc::CommandBuffer::Reuse()
 {
-	assert(m_Status == Status::Submitted);
+	assert(m_Status != Status::Recording || m_Status != Status::Ready);
 	m_Status = Status::Executable;
 }
 
