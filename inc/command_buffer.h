@@ -31,6 +31,8 @@ namespace vkc
 
 		void End(Context const& context);
 
+		void Reset(Context const& context, bool reuse = false);
+
 		void Submit
 		(
 			Context const&                     context

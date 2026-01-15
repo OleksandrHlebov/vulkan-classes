@@ -46,7 +46,7 @@ namespace vkc
 
 		void Destroy(Context const& context) const;
 
-		void *GetMappedData() const
+		[[nodiscard]] void *GetMappedData() const
 		{
 			return m_Data;
 		}

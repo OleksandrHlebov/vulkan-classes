@@ -55,7 +55,8 @@ void vkc::Buffer::Destroy(Context const& context) const
 	vmaDestroyBuffer(context.Allocator, *this, m_Allocation);
 }
 
-vkc::Buffer::operator struct VkBuffer_T*() const {
+vkc::Buffer::operator struct VkBuffer_T*() const
+{
 	return m_Buffer;
 }
 
@@ -101,7 +102,6 @@ vkc::Buffer vkc::BufferBuilder::Build(VkBufferUsageFlags usage, VkDeviceSize siz
 	vmaCreateBuffer(m_Context.Allocator, &m_BufferCreateInfo, &m_AllocationCreateInfo, buffer, &buffer.m_Allocation, nullptr);
 	if (m_MapMemory)
 		vmaMapMemory(m_Context.Allocator, buffer.m_Allocation, &buffer.m_Data);
-
 
 	if (addToQueue)
 		m_Context.DeletionQueue.Push([context = &m_Context
